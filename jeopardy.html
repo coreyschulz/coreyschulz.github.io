@@ -45,7 +45,7 @@ button:hover {
 <button onclick="buzz()">Buzz</button>
 
 <script>
-    let server = "ws://ec2-54-89-199-112.compute-1.amazonaws.com:9999";
+    let server = "wss://ec2-54-89-199-112.compute-1.amazonaws.com:9999";
     let socket = new WebSocket(server);
     
     socket.onopen = function(e) {
