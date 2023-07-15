@@ -45,23 +45,23 @@ button:hover {
 <button onclick="buzz()">Buzz</button>
 
 <script>
-    let server = "ws://ec2-54-89-199-112.compute-1.amazonaws.com:9999";
-    let socket = new WebSocket(server);
-    
-    socket.onopen = function(e) {
-      let username = prompt("Please enter your username");
-      document.getElementById("status").textContent = username + " is willing to risk it all";
-      socket.send(username);
-    };
-    
-    socket.onerror = function(error) {
-      alert(`WebSocket error: ${error}`);
-    };
-    
-    function buzz() {
-      socket.send("BUZZ");
-    }
-    </script>
+let server = prompt("Please enter the server address");
+let socket = new WebSocket("wss://" + server);
+
+socket.onopen = function(e) {
+  let username = prompt("Please enter your username");
+  document.getElementById("status").textContent = username + " has entered the game";
+  socket.send(username);
+};
+
+socket.onerror = function(error) {
+  alert(`WebSocket error: ${error}`);
+};
+
+function buzz() {
+  socket.send("BUZZ");
+}
+</script>
 
 </body>
 </html>
