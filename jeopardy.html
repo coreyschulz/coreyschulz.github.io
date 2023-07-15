@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: black;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+#status {
+  position: absolute;
+  top: 20px;
+}
+
+button {
+  font-size: 2em;
+  padding: 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: yellow;
+  color: black;
+  cursor: pointer;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease 0s;
+}
+
+button:hover {
+  background-color: #ffaa22;
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-7px);
+}
+</style>
+</head>
+<body>
+
+<p id="status"></p>
+
+<button onclick="buzz()">Buzz</button>
+
+<script>
+    let server = "ws://ec2-54-89-199-112.compute-1.amazonaws.com:9999";
+    let socket = new WebSocket(server);
+    
+    socket.onopen = function(e) {
+      let username = prompt("Please enter your username");
+      document.getElementById("status").textContent = username + " is willing to risk it all";
+      socket.send(username);
+    };
+    
+    socket.onerror = function(error) {
+      alert(`WebSocket error: ${error}`);
+    };
+    
+    function buzz() {
+      socket.send("BUZZ");
+    }
+    </script>
+
+</body>
+</html>
