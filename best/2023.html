@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Best of 2023</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: #f4f4f4;
+        }
+        .header {
+            background: #444;
+            color: #f9f9f9;
+            text-align: center;
+            padding: 40px 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .section {
+            margin: 20px;
+        }
+        .section-header {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .item-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 30px; /* Increased bottom margin for each section */
+        }
+        .item-container {
+            display: flex;
+            flex-direction: column; /* Change to column layout */
+            align-items: center; /* Center items vertically */
+            margin-bottom: 30px;
+        }
+        .item {
+            width: 20%; /* Adjust width to your preference */
+            margin-bottom: 30px;
+            position: relative;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        .item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .item-number {
+            position: absolute;
+            top: -15px; /* Adjusted position for larger bubble */
+            left: 15px;
+            background: #ff6347;
+            color: white;
+            padding: 8px 15px; /* Increased size of the bubble */
+            border-radius: 50%;
+            font-size: 1.2em; /* Larger font size for the number */
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .item {
+                width: 100%;
+            }
+        }
+        .footer {
+            background: #444;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Best of 2023</h1>
+    </br>
+        <body>here are my picks for the best new media (games, TV and movies) released this year!</body>
+    </div>
+
+    <div class="section" id="games">
+        <div class="section-header">Top 5 Games</div>
+        <div class="item-container">
+            <div class="item">
+                <div class="item-number">5</div>
+                <img src="../images/2023/games_5.png" alt="Octopath Traveler II">
+                <div>Octopath Traveler II</div>
+            </div>
+            <div class="item">
+                <div class="item-number">4</div>
+                <img src="../images/2023/games_4.png" alt="Class of '09: The Re-Up">
+                <div>Class of '09: The Re-Up</div>
+            </div>
+            <div class="item">
+                <div class="item-number">3</div>
+                <img src="../images/2023/games_3.png" alt="Baldur's Gate 3">
+                <div>Baldur's Gate 3</div>
+            </div>
+            <div class="item">
+                <div class="item-number">2</div>
+                <img src="../images/2023/games_2.png" alt="The Legend of Heroes: Trails into Reverie">
+                <div>The Legend of Heroes: Trails into Reverie</div>
+            </div>
+            <div class="item">
+                <div class="item-number">1</div>
+                <img src="../images/2023/games_1.png" alt="FINAL FANTASY XVI">
+                <div>FINAL FANTASY XVI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repeat sections for TV Shows and Movies -->
+
+    <div class="footer">
+        <div>2023 - corey schulz</div>
+    </div>
+</body>
+</html>
