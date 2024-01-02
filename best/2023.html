@@ -72,7 +72,23 @@
         }
         @media (max-width: 600px) {
             .item {
-                width: 100%;
+                width: 100%; /* Full width on small screens */
+                margin: 10px 0; /* Reduced vertical margin */
+                padding: 10px; /* Adequate padding */
+            }
+
+            .item img {
+                width: auto; /* Adjust image width to be responsive */
+                max-width: 100%; /* Ensure image doesn't exceed item width */
+                height: auto; /* Maintain aspect ratio */
+            }
+
+            .item-container {
+                padding: 0 10px; /* Add padding to the container for spacing */
+            }
+
+            .section {
+                margin: 20px 0; /* Adjust section margin for mobile */
             }
         }
         .footer {
