@@ -352,7 +352,7 @@ class JeopardyClient {
         try {
             // Ensure server URL doesn't have protocol prefix if user included it
             let serverUrl = this.server.replace(/^(ws|wss):\/\//, '');
-            this.socket = new WebSocket("wss://" + serverUrl);
+            this.socket = new WebSocket("ws://" + serverUrl);
             
             this.socket.onopen = (e) => this.onOpen(e);
             this.socket.onmessage = (event) => this.onMessage(event);
