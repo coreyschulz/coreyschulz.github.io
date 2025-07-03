@@ -270,8 +270,16 @@
                 this.connectionState = 'connecting';
                 
                 try {
-                    let serverUrl = this.server.replace(/^(ws|wss):\/\//, '');
-                    this.socket = new WebSocket("wss://" + serverUrl);
+                    // Ensure server URL doesn't have protocol prefix if user included it
+                    let serverUrl = this.server.replace(/^(ws|wss|https?):\/\//, '');
+                    
+                    // Try WSS first (for tunneled connections), then fall back to WS
+                    let protocol = "wss://";
+                    if (serverUrl.includes("localhost") || serverUrl.includes("127.0.0.1")) {
+                        protocol = "ws://";
+                    }
+                    
+                    this.socket = new WebSocket(protocol + serverUrl);
                     
                     this.socket.onopen = (e) => this.onOpen(e);
                     this.socket.onmessage = (event) => this.onMessage(event);
