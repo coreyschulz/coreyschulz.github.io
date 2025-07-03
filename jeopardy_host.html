@@ -348,11 +348,11 @@
             getServerInfo() {
                 console.log("getServerInfo called, this.server =", this.server);
                 if (!this.server) {
-                    console.log("Prompting for server...");
-                    this.server = window.prompt("What server are you trying to connect to?");
+                    console.log("Prompting for game code...");
+                    this.server = window.prompt("Please enter your game code:");
                     console.log("User entered:", this.server);
                     if (!this.server) {
-                        alert("Server address is required!");
+                        alert("Game Code or server address is required!");
                         this.getServerInfo();
                         return;
                     }
@@ -380,6 +380,13 @@
                 try {
                     // Ensure server URL doesn't have protocol prefix if user included it
                     let serverUrl = this.server.replace(/^(ws|wss|https?):\/\//, '');
+                    
+                    // Check if input is just an ngrok ID (format: xxxx-xxx-xxx-xxx-xxx)
+                    const ngrokPattern = /^[a-f0-9]{4}-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}$/;
+                    if (ngrokPattern.test(serverUrl)) {
+                        // Auto-format as ngrok URL
+                        serverUrl = serverUrl + '.ngrok-free.app';
+                    }
                     
                     // Try WSS first (for tunneled connections), then fall back to WS
                     let protocol = "wss://";
