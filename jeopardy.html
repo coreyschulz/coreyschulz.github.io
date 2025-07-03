@@ -168,6 +168,56 @@ body.finalJeopardy {
   animation: pulseBlue 4s ease-in-out infinite;
 }
 
+.connection-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #00ff00;
+  margin-right: 5px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+#wagerInput {
+  display: none;
+  font-size: 1.5em;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  width: 200px;
+  text-align: center;
+}
+
+#wagerButton {
+  display: none;
+  font-size: 1.5em;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: orange;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease 0s;
+}
+
+#wagerButton:hover {
+  background-color: darkorange;
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-7px);
+}
+
+#wagerButton:active {
+  transform: scale(0.95);
+}
+
 </style>
 </head>
 <body>
@@ -183,6 +233,8 @@ body.finalJeopardy {
 </button>
 <input type="text" id="finalAnswer">
 <button id="finalAnswerButton" onclick="sendFinalAnswer()">Send</button>
+<input type="number" id="wagerInput" placeholder="Enter your wager...">
+<button id="wagerButton" onclick="sendWager()">Submit Wager</button>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0"></script>
 <script>
 // Browser compatibility polyfills
@@ -322,11 +374,16 @@ class JeopardyClient {
         this.buzzButton = document.getElementById("buzzButton");
         this.finalAnswerInput = document.getElementById("finalAnswer");
         this.finalAnswerButton = document.getElementById("finalAnswerButton");
+        this.wagerInput = document.getElementById("wagerInput");
+        this.wagerButton = document.getElementById("wagerButton");
         this.sentMessage = document.getElementById("sent_message");
         this.queueDiv = document.getElementById("queue");
         this.penaltyMessage = document.getElementById("penalty_message");
         this.connectionStatus = document.getElementById("connection_status");
         this.status = document.getElementById("status");
+        
+        // Track wager state
+        this.wagerSent = false;
         
         this.init();
     }
@@ -419,6 +476,10 @@ class JeopardyClient {
             this.handlePenalty();
         } else if (message === "FINAL") {
             this.startFinalJeopardy();
+        } else if (message === "WAGER_REQUEST") {
+            this.requestWager();
+        } else if (message === "RESET_GAME") {
+            this.resetGameState();
         } else if (message && message.queue !== undefined) {
             this.updateQueue(message);
         } else if (message && message.error) {
@@ -543,6 +604,15 @@ class JeopardyClient {
         document.body.classList.add("finalJeopardy");
     }
     
+    requestWager() {
+        if (!this.wagerSent) {
+            this.buzzButton.style.display = "none";
+            this.wagerInput.style.display = "block";
+            this.wagerButton.style.display = "block";
+            this.showErrorMessage("Host is requesting Final Jeopardy wagers!");
+        }
+    }
+    
     getRandomMessage() {
         return this.fun_messages[Math.floor(Math.random() * this.fun_messages.length)];
     }
@@ -552,7 +622,7 @@ class JeopardyClient {
             this.status.textContent = "Waiting for players...";
         } else {
             const player_strings = this.connected_players.map(player => 
-                player.toLowerCase() + " " + this.getRandomMessage()
+                `<span class="connection-indicator"></span>${player.toLowerCase()} ${this.getRandomMessage()}`
             );
             this.status.innerHTML = player_strings.join("<br>");
         }
@@ -615,6 +685,58 @@ class JeopardyClient {
             }
         }
     }
+    
+    sendWager() {
+        if (!this.wagerSent) {
+            const wager = this.wagerInput.value.trim();
+            if (!wager) {
+                alert("Please enter a wager!");
+                return;
+            }
+            
+            const wagerValue = parseInt(wager);
+            if (isNaN(wagerValue) || wagerValue < 0) {
+                alert("Please enter a valid non-negative number!");
+                return;
+            }
+            
+            const success = this.sendMessage("WAGER:" + this.local_username + ":" + wager);
+            if (success) {
+                this.wagerInput.style.display = "none";
+                this.wagerButton.style.display = "none";
+                this.buzzButton.style.display = "block";
+                this.showErrorMessage("Wager submitted!");
+                this.wagerSent = true;
+            } else {
+                this.showErrorMessage("Failed to send wager - not connected!");
+            }
+        }
+    }
+    
+    resetGameState() {
+        // Reset all UI elements to initial state
+        this.buzzButton.style.display = "block";
+        this.finalAnswerInput.style.display = "none";
+        this.finalAnswerButton.style.display = "none";
+        this.wagerInput.style.display = "none";
+        this.wagerButton.style.display = "none";
+        this.sentMessage.style.display = "none";
+        
+        // Reset state variables
+        this.finalAnswerSent = false;
+        this.wagerSent = false;
+        
+        // Remove body classes
+        document.body.classList.remove("finalJeopardy");
+        document.body.classList.remove("glowing");
+        document.body.classList.remove("winning");
+        
+        // Clear input fields
+        this.finalAnswerInput.value = "";
+        this.wagerInput.value = "";
+        
+        this.showErrorMessage("Game reset by host!");
+    }
 }
 
 // Initialize the client
@@ -627,6 +749,10 @@ function buzz() {
 
 function sendFinalAnswer() {
     jeopardyClient.sendFinalAnswer();
+}
+
+function sendWager() {
+    jeopardyClient.sendWager();
 }
 </script>
 
