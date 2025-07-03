@@ -158,22 +158,7 @@
                 return;
             }
             
-            // Polyfill for older browsers that don't support classList
-            if (!Element.prototype.classList) {
-                Element.prototype.classList = {
-                    add: function(className) {
-                        if (!this.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
-                            this.className += (this.className ? ' ' : '') + className;
-                        }
-                    },
-                    remove: function(className) {
-                        this.className = this.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
-                    },
-                    contains: function(className) {
-                        return this.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
-                    }
-                };
-            }
+            // classList is supported in all modern browsers, skip polyfill
             
             // Console polyfill for older IE
             if (!window.console) {
@@ -218,6 +203,7 @@
         
         class JeopardyHost {
             constructor() {
+                console.log("JeopardyHost constructor starting...");
                 this.server = null;
                 this.socket = null;
                 this.reconnectAttempts = 0;
@@ -231,6 +217,13 @@
                 this.queueDiv = document.getElementById("queue");
                 this.finalAnswersDiv = document.getElementById("finalAnswers");
                 
+                console.log("DOM elements:", {
+                    toggleSwitch: this.toggleSwitch,
+                    queueDiv: this.queueDiv,
+                    finalAnswersDiv: this.finalAnswersDiv
+                });
+                
+                console.log("About to call init()...");
                 this.init();
             }
             
@@ -241,8 +234,11 @@
             }
             
             getServerInfo() {
+                console.log("getServerInfo called, this.server =", this.server);
                 if (!this.server) {
+                    console.log("Prompting for server...");
                     this.server = window.prompt("What server are you trying to connect to?");
+                    console.log("User entered:", this.server);
                     if (!this.server) {
                         alert("Server address is required!");
                         this.getServerInfo();
@@ -466,20 +462,30 @@
             }
         }
         
-        // Initialize the host
-        const jeopardyHost = new JeopardyHost();
+        // Initialize the host when DOM is ready
+        let jeopardyHost;
+        
+        function initializeHost() {
+            jeopardyHost = new JeopardyHost();
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeHost);
+        } else {
+            initializeHost();
+        }
         
         // Global functions for button onclick events
         function bootPlayer() {
-            jeopardyHost.bootPlayer();
+            if (jeopardyHost) jeopardyHost.bootPlayer();
         }
         
         function markWin() {
-            jeopardyHost.markWin();
+            if (jeopardyHost) jeopardyHost.markWin();
         }
         
         function startFinalJeopardy() {
-            jeopardyHost.startFinalJeopardy();
+            if (jeopardyHost) jeopardyHost.startFinalJeopardy();
         }
     </script>
 </body>
