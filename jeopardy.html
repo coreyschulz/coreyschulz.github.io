@@ -302,6 +302,22 @@ class JeopardyClient {
         this.heartbeatInterval = null;
         this.connectionState = 'disconnected';
         
+        // Connected players list and fun messages
+        this.connected_players = [];
+        this.fun_messages = [
+            "is ready to rumble",
+            "is feeling lucky",
+            "came to play",
+            "is locked and loaded", 
+            "means business",
+            "is in the zone",
+            "brought their A-game",
+            "is fired up",
+            "is ready to shine",
+            "came to win",
+            "is willing to risk it all"
+        ];
+        
         // DOM elements
         this.buzzButton = document.getElementById("buzzButton");
         this.finalAnswerInput = document.getElementById("finalAnswer");
@@ -375,7 +391,6 @@ class JeopardyClient {
     onOpen(e) {
         console.log("WebSocket connected");
         this.updateConnectionStatus("Connected!", "green");
-        this.status.textContent = this.local_username.toLowerCase() + " is willing to risk it all";
         this.connectionState = 'connected';
         this.reconnectAttempts = 0;
         this.reconnectDelay = 1000;
@@ -528,6 +543,21 @@ class JeopardyClient {
         document.body.classList.add("finalJeopardy");
     }
     
+    getRandomMessage() {
+        return this.fun_messages[Math.floor(Math.random() * this.fun_messages.length)];
+    }
+    
+    updatePlayersList() {
+        if (this.connected_players.length === 0) {
+            this.status.textContent = "Waiting for players...";
+        } else {
+            const player_strings = this.connected_players.map(player => 
+                player.toLowerCase() + " " + this.getRandomMessage()
+            );
+            this.status.innerHTML = player_strings.join("<br>");
+        }
+    }
+    
     updateQueue(message) {
         const listHtml = message.queue.map(username => "<li>" + username + "</li>").join("");
         this.queueDiv.innerHTML = "<ul>" + listHtml + "</ul>";
@@ -544,6 +574,12 @@ class JeopardyClient {
             setTimeout(() => {
                 document.body.classList.remove("winning");
             }, 3000);
+        }
+        
+        // Update connected players list
+        if (message.connected_players) {
+            this.connected_players = message.connected_players;
+            this.updatePlayersList();
         }
     }
     
