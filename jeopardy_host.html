@@ -145,63 +145,333 @@
     <div id="finalAnswers"></div>
 
     <script>
-        let server = window.prompt("What server are you trying to connect to?");
-        let socket = new WebSocket("wss://" + server);
-
-        let toggleSwitch = document.getElementById("toggleSwitch");
-        let queueDiv = document.getElementById("queue");
-        let finalAnswersDiv = document.getElementById("finalAnswers");
-
-        socket.onopen = function(e) {
-            socket.send("host");
-        };
-
-        socket.onmessage = function(event) {
-            let message = event.data;
-
-            // Check if the message is a JSON string
-            if (message[0] === '{') {
-                try {
-                    message = JSON.parse(message);
-                } catch (e) {
-                    console.error('Error parsing JSON', e);
+        // Browser compatibility polyfills
+        (function() {
+            // WebSocket support detection
+            if (typeof WebSocket === 'undefined' && typeof MozWebSocket !== 'undefined') {
+                window.WebSocket = MozWebSocket;
+            }
+            
+            // Check for WebSocket support
+            if (typeof WebSocket === 'undefined') {
+                alert('Your browser does not support WebSocket connections. Please use a modern browser like Chrome, Firefox, Safari, or Edge.');
+                return;
+            }
+            
+            // Polyfill for older browsers that don't support classList
+            if (!Element.prototype.classList) {
+                Element.prototype.classList = {
+                    add: function(className) {
+                        if (!this.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
+                            this.className += (this.className ? ' ' : '') + className;
+                        }
+                    },
+                    remove: function(className) {
+                        this.className = this.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
+                    },
+                    contains: function(className) {
+                        return this.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+                    }
+                };
+            }
+            
+            // Console polyfill for older IE
+            if (!window.console) {
+                window.console = {
+                    log: function() {},
+                    error: function() {},
+                    warn: function() {},
+                    debug: function() {}
+                };
+            }
+            
+            // Array.prototype.map polyfill for IE8
+            if (!Array.prototype.map) {
+                Array.prototype.map = function(callback, thisArg) {
+                    var T, A, k;
+                    if (this == null) {
+                        throw new TypeError('this is null or not defined');
+                    }
+                    var O = Object(this);
+                    var len = parseInt(O.length) || 0;
+                    if (typeof callback !== 'function') {
+                        throw new TypeError(callback + ' is not a function');
+                    }
+                    if (arguments.length > 1) {
+                        T = thisArg;
+                    }
+                    A = new Array(len);
+                    k = 0;
+                    while (k < len) {
+                        var kValue, mappedValue;
+                        if (k in O) {
+                            kValue = O[k];
+                            mappedValue = callback.call(T, kValue, k, O);
+                            A[k] = mappedValue;
+                        }
+                        k++;
+                    }
+                    return A;
+                };
+            }
+        })();
+        
+        class JeopardyHost {
+            constructor() {
+                this.server = null;
+                this.socket = null;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 10;
+                this.reconnectDelay = 1000;
+                this.heartbeatInterval = null;
+                this.connectionState = 'disconnected';
+                
+                // DOM elements
+                this.toggleSwitch = document.getElementById("toggleSwitch");
+                this.queueDiv = document.getElementById("queue");
+                this.finalAnswersDiv = document.getElementById("finalAnswers");
+                
+                this.init();
+            }
+            
+            init() {
+                this.getServerInfo();
+                this.connect();
+                this.setupEventListeners();
+            }
+            
+            getServerInfo() {
+                if (!this.server) {
+                    this.server = window.prompt("What server are you trying to connect to?");
+                    if (!this.server) {
+                        alert("Server address is required!");
+                        this.getServerInfo();
+                        return;
+                    }
                 }
             }
-
-            if (message.queue) {
-                let listHtml = message.queue.map(username => "<li>" + username + "</li>").join("");
-                queueDiv.innerHTML = "<ul>" + listHtml + "</ul>";
+            
+            setupEventListeners() {
+                this.toggleSwitch.onchange = () => {
+                    if (this.toggleSwitch.checked) {
+                        this.sendMessage("UNLOCK");
+                    } else {
+                        this.sendMessage("LOCK");
+                    }
+                };
             }
-            if (typeof message === "string" && message.startsWith("FINAL_ANSWER:")) {
-                let components = message.split(":");
-                let username = components[1];
-                let answer = components[2];
-                let listItem = document.createElement("li");
-                listItem.textContent = username + ": " + answer;
-                finalAnswersDiv.appendChild(listItem);
+            
+            connect() {
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                    return;
+                }
+                
+                this.updateTitle("Connecting...");
+                this.connectionState = 'connecting';
+                
+                try {
+                    let serverUrl = this.server.replace(/^(ws|wss):\/\//, '');
+                    this.socket = new WebSocket("wss://" + serverUrl);
+                    
+                    this.socket.onopen = (e) => this.onOpen(e);
+                    this.socket.onmessage = (event) => this.onMessage(event);
+                    this.socket.onclose = (event) => this.onClose(event);
+                    this.socket.onerror = (error) => this.onError(error);
+                    
+                } catch (error) {
+                    console.error("Failed to create WebSocket:", error);
+                    this.onError(error);
+                }
             }
-        };
-
-        toggleSwitch.onchange = function() {
-            if (toggleSwitch.checked) {
-                socket.send("UNLOCK");
-            } else {
-                socket.send("LOCK");
+            
+            onOpen(e) {
+                console.log("Host WebSocket connected");
+                this.updateTitle("Host Panel - Connected");
+                this.connectionState = 'connected';
+                this.reconnectAttempts = 0;
+                this.reconnectDelay = 1000;
+                
+                this.sendMessage("host");
+                this.startHeartbeat();
             }
-        };
-
+            
+            onMessage(event) {
+                let message = event.data;
+                
+                if (message === "PONG") {
+                    return;
+                }
+                
+                // Check if the message is a JSON string
+                if (message[0] === '{') {
+                    try {
+                        message = JSON.parse(message);
+                    } catch (e) {
+                        console.error('Error parsing JSON', e);
+                        return;
+                    }
+                }
+                
+                if (message && message.queue !== undefined) {
+                    let listHtml = message.queue.map(username => "<li>" + username + "</li>").join("");
+                    this.queueDiv.innerHTML = "<ul>" + listHtml + "</ul>";
+                }
+                
+                if (typeof message === "string" && message.startsWith("FINAL_ANSWER:")) {
+                    let components = message.split(":");
+                    if (components.length >= 3) {
+                        let username = components[1];
+                        let answer = components.slice(2).join(":"); // In case answer contains colons
+                        let listItem = document.createElement("li");
+                        listItem.textContent = username + ": " + answer;
+                        this.finalAnswersDiv.appendChild(listItem);
+                    }
+                }
+                
+                if (message && message.error) {
+                    console.error("Server error:", message.error);
+                    this.showErrorMessage("Server error: " + message.error);
+                }
+            }
+            
+            onClose(event) {
+                console.log("Host WebSocket closed:", event.code, event.reason);
+                this.connectionState = 'disconnected';
+                this.stopHeartbeat();
+                
+                if (event.code !== 1000) {
+                    this.updateTitle("Host Panel - Disconnected");
+                    this.attemptReconnect();
+                } else {
+                    this.updateTitle("Host Panel - Disconnected");
+                }
+            }
+            
+            onError(error) {
+                console.error("Host WebSocket error:", error);
+                this.updateTitle("Host Panel - Connection Error");
+                this.showErrorMessage("Connection error. Attempting to reconnect...");
+            }
+            
+            attemptReconnect() {
+                if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+                    this.updateTitle("Host Panel - Connection Failed");
+                    this.showErrorMessage("Failed to reconnect after multiple attempts. Please refresh the page.");
+                    return;
+                }
+                
+                this.reconnectAttempts++;
+                const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000);
+                
+                this.updateTitle(`Host Panel - Reconnecting... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+                
+                setTimeout(() => {
+                    if (this.connectionState === 'disconnected') {
+                        this.connect();
+                    }
+                }, delay);
+            }
+            
+            startHeartbeat() {
+                this.stopHeartbeat();
+                this.heartbeatInterval = setInterval(() => {
+                    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                        this.sendMessage("PING");
+                    }
+                }, 25000);
+            }
+            
+            stopHeartbeat() {
+                if (this.heartbeatInterval) {
+                    clearInterval(this.heartbeatInterval);
+                    this.heartbeatInterval = null;
+                }
+            }
+            
+            sendMessage(message) {
+                if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                    try {
+                        this.socket.send(message);
+                        return true;
+                    } catch (error) {
+                        console.error("Failed to send message:", error);
+                        this.showErrorMessage("Failed to send message: " + error);
+                        return false;
+                    }
+                } else {
+                    console.warn("Cannot send message: WebSocket not connected");
+                    this.showErrorMessage("Not connected. Message not sent.");
+                    return false;
+                }
+            }
+            
+            updateTitle(text) {
+                document.title = text;
+                const h1 = document.querySelector('h1');
+                if (h1) {
+                    h1.textContent = text.replace('Host Panel - ', '');
+                }
+            }
+            
+            showErrorMessage(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.textContent = message;
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #ff6b6b;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    font-size: 14px;
+                `;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.parentNode.removeChild(errorDiv);
+                    }
+                }, 5000);
+            }
+            
+            bootPlayer() {
+                return this.sendMessage("BOOT");
+            }
+            
+            markWin() {
+                const success = this.sendMessage("WIN");
+                if (success) {
+                    this.toggleSwitch.checked = false;
+                }
+                return success;
+            }
+            
+            startFinalJeopardy() {
+                const success = this.sendMessage("FINAL");
+                if (success) {
+                    this.toggleSwitch.checked = false;
+                }
+                return success;
+            }
+        }
+        
+        // Initialize the host
+        const jeopardyHost = new JeopardyHost();
+        
+        // Global functions for button onclick events
         function bootPlayer() {
-            socket.send("BOOT");
+            jeopardyHost.bootPlayer();
         }
-
+        
         function markWin() {
-            socket.send("WIN");
-            toggleSwitch.checked = false;
+            jeopardyHost.markWin();
         }
-
+        
         function startFinalJeopardy() {
-            socket.send("FINAL");
-            toggleSwitch.checked = false;
+            jeopardyHost.startFinalJeopardy();
         }
     </script>
 </body>

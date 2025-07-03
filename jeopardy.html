@@ -185,89 +185,405 @@ body.finalJeopardy {
 <button id="finalAnswerButton" onclick="sendFinalAnswer()">Send</button>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0"></script>
 <script>
-let server = window.prompt("What server are you trying to connect to?");
-let socket = new WebSocket("wss://" + server);
-let buzzButton = document.getElementById("buzzButton");
-let finalAnswerInput = document.getElementById("finalAnswer");
-let finalAnswerButton = document.getElementById("finalAnswerButton");
-let sentMessage = document.getElementById("sent_message");
-let queueDiv = document.getElementById("queue");
-let penaltyMessage = document.getElementById("penalty_message");
-
-let local_username;
-let finalAnswerSent = false;
-
-function setUsername() {
-  local_username = window.prompt("Please enter your username:");
-}
-
-setUsername();
-
-socket.onopen = function(e) {
-  document.getElementById("status").textContent = local_username.toLowerCase() + " is willing to risk it all";
-  document.getElementById("connection_status").textContent = "Connected!";
-  document.getElementById("connection_status").style.color = "green";
-  socket.send(local_username);
-};
-
-socket.onmessage = function(event) {
-    let message;
-    try {
-        message = JSON.parse(event.data);
-    } catch (e) {
-        message = event.data;
+// Browser compatibility polyfills
+(function() {
+    // WebSocket support detection
+    if (typeof WebSocket === 'undefined' && typeof MozWebSocket !== 'undefined') {
+        window.WebSocket = MozWebSocket;
     }
-    if (message == "PENALTY") {
-        buzzButton.disabled = true;
-        penaltyMessage.style.opacity = "1";
-        setTimeout(function() {
-            buzzButton.disabled = false;
-            penaltyMessage.style.opacity = "0";
+    
+    // Check for WebSocket support
+    if (typeof WebSocket === 'undefined') {
+        alert('Your browser does not support WebSocket connections. Please use a modern browser like Chrome, Firefox, Safari, or Edge.');
+        return;
+    }
+    
+    // Polyfill for older browsers that don't support classList
+    if (!Element.prototype.classList) {
+        Element.prototype.classList = {
+            add: function(className) {
+                if (!this.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
+                    this.className += (this.className ? ' ' : '') + className;
+                }
+            },
+            remove: function(className) {
+                this.className = this.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
+            },
+            contains: function(className) {
+                return this.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+            }
+        };
+    }
+    
+    // Polyfill for String.trim() (IE8 and below)
+    if (!String.prototype.trim) {
+        String.prototype.trim = function() {
+            return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+        };
+    }
+    
+    // Console polyfill for older IE
+    if (!window.console) {
+        window.console = {
+            log: function() {},
+            error: function() {},
+            warn: function() {},
+            debug: function() {}
+        };
+    }
+    
+    // Array.prototype.map polyfill for IE8
+    if (!Array.prototype.map) {
+        Array.prototype.map = function(callback, thisArg) {
+            var T, A, k;
+            if (this == null) {
+                throw new TypeError('this is null or not defined');
+            }
+            var O = Object(this);
+            var len = parseInt(O.length) || 0;
+            if (typeof callback !== 'function') {
+                throw new TypeError(callback + ' is not a function');
+            }
+            if (arguments.length > 1) {
+                T = thisArg;
+            }
+            A = new Array(len);
+            k = 0;
+            while (k < len) {
+                var kValue, mappedValue;
+                if (k in O) {
+                    kValue = O[k];
+                    mappedValue = callback.call(T, kValue, k, O);
+                    A[k] = mappedValue;
+                }
+                k++;
+            }
+            return A;
+        };
+    }
+    
+    // JSON.parse/stringify polyfill for very old browsers
+    if (!window.JSON) {
+        window.JSON = {
+            parse: function(str) {
+                return eval('(' + str + ')');
+            },
+            stringify: function(obj) {
+                var t = typeof (obj);
+                if (t != "object" || obj === null) {
+                    if (t == "string") obj = '"' + obj + '"';
+                    return String(obj);
+                } else {
+                    var n, v, json = [], arr = (obj && obj.constructor == Array);
+                    for (n in obj) {
+                        v = obj[n];
+                        t = typeof(v);
+                        if (t == "string") v = '"' + v + '"';
+                        else if (t == "object" && v !== null) v = JSON.stringify(v);
+                        json.push((arr ? "" : '"' + n + '":') + String(v));
+                    }
+                    return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+                }
+            }
+        };
+    }
+})();
+</script>
+<script>
+class JeopardyClient {
+    constructor() {
+        this.server = null;
+        this.socket = null;
+        this.local_username = null;
+        this.finalAnswerSent = false;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 10;
+        this.reconnectDelay = 1000; // Start with 1 second
+        this.heartbeatInterval = null;
+        this.connectionState = 'disconnected';
+        
+        // DOM elements
+        this.buzzButton = document.getElementById("buzzButton");
+        this.finalAnswerInput = document.getElementById("finalAnswer");
+        this.finalAnswerButton = document.getElementById("finalAnswerButton");
+        this.sentMessage = document.getElementById("sent_message");
+        this.queueDiv = document.getElementById("queue");
+        this.penaltyMessage = document.getElementById("penalty_message");
+        this.connectionStatus = document.getElementById("connection_status");
+        this.status = document.getElementById("status");
+        
+        this.init();
+    }
+    
+    init() {
+        this.getConnectionInfo();
+        this.connect();
+    }
+    
+    getConnectionInfo() {
+        if (!this.server) {
+            this.server = window.prompt("What server are you trying to connect to?");
+            if (!this.server) {
+                alert("Server address is required!");
+                this.getConnectionInfo();
+                return;
+            }
+        }
+        
+        if (!this.local_username) {
+            this.local_username = window.prompt("Please enter your username:");
+            if (!this.local_username || this.local_username.trim() === "") {
+                alert("Username is required!");
+                this.getConnectionInfo();
+                return;
+            }
+            this.local_username = this.local_username.trim();
+        }
+    }
+    
+    connect() {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            return;
+        }
+        
+        this.updateConnectionStatus("Connecting...", "orange");
+        this.connectionState = 'connecting';
+        
+        try {
+            // Ensure server URL doesn't have protocol prefix if user included it
+            let serverUrl = this.server.replace(/^(ws|wss):\/\//, '');
+            this.socket = new WebSocket("wss://" + serverUrl);
+            
+            this.socket.onopen = (e) => this.onOpen(e);
+            this.socket.onmessage = (event) => this.onMessage(event);
+            this.socket.onclose = (event) => this.onClose(event);
+            this.socket.onerror = (error) => this.onError(error);
+            
+        } catch (error) {
+            console.error("Failed to create WebSocket:", error);
+            this.onError(error);
+        }
+    }
+    
+    onOpen(e) {
+        console.log("WebSocket connected");
+        this.updateConnectionStatus("Connected!", "green");
+        this.status.textContent = this.local_username.toLowerCase() + " is willing to risk it all";
+        this.connectionState = 'connected';
+        this.reconnectAttempts = 0;
+        this.reconnectDelay = 1000;
+        
+        // Send username
+        this.sendMessage(this.local_username);
+        
+        // Start heartbeat
+        this.startHeartbeat();
+    }
+    
+    onMessage(event) {
+        let message;
+        try {
+            message = JSON.parse(event.data);
+        } catch (e) {
+            message = event.data;
+        }
+        
+        if (message === "PONG") {
+            // Heartbeat response
+            return;
+        }
+        
+        if (message === "PENALTY") {
+            this.handlePenalty();
+        } else if (message === "FINAL") {
+            this.startFinalJeopardy();
+        } else if (message && message.queue !== undefined) {
+            this.updateQueue(message);
+        } else if (message && message.error) {
+            console.error("Server error:", message.error);
+            this.showErrorMessage("Server error: " + message.error);
+        }
+    }
+    
+    onClose(event) {
+        console.log("WebSocket closed:", event.code, event.reason);
+        this.connectionState = 'disconnected';
+        this.stopHeartbeat();
+        
+        if (event.code !== 1000) { // Not a normal close
+            this.updateConnectionStatus("Disconnected", "red");
+            this.attemptReconnect();
+        } else {
+            this.updateConnectionStatus("Disconnected", "gray");
+        }
+    }
+    
+    onError(error) {
+        console.error("WebSocket error:", error);
+        this.showErrorMessage("Connection error. Attempting to reconnect...");
+        this.updateConnectionStatus("Connection Error", "red");
+    }
+    
+    attemptReconnect() {
+        if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+            this.updateConnectionStatus("Connection Failed", "red");
+            this.showErrorMessage("Failed to reconnect after multiple attempts. Please refresh the page.");
+            return;
+        }
+        
+        this.reconnectAttempts++;
+        const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000);
+        
+        this.updateConnectionStatus(`Reconnecting... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`, "orange");
+        
+        setTimeout(() => {
+            if (this.connectionState === 'disconnected') {
+                this.connect();
+            }
+        }, delay);
+    }
+    
+    startHeartbeat() {
+        this.stopHeartbeat();
+        this.heartbeatInterval = setInterval(() => {
+            if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                this.sendMessage("PING");
+            }
+        }, 25000); // Send ping every 25 seconds
+    }
+    
+    stopHeartbeat() {
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+            this.heartbeatInterval = null;
+        }
+    }
+    
+    sendMessage(message) {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            try {
+                this.socket.send(message);
+                return true;
+            } catch (error) {
+                console.error("Failed to send message:", error);
+                return false;
+            }
+        } else {
+            console.warn("Cannot send message: WebSocket not connected");
+            this.showErrorMessage("Not connected. Message not sent.");
+            return false;
+        }
+    }
+    
+    updateConnectionStatus(text, color) {
+        this.connectionStatus.textContent = text;
+        this.connectionStatus.style.color = color;
+    }
+    
+    showErrorMessage(message) {
+        // Create a temporary error message element
+        const errorDiv = document.createElement('div');
+        errorDiv.textContent = message;
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-size: 14px;
+        `;
+        document.body.appendChild(errorDiv);
+        
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 5000);
+    }
+    
+    handlePenalty() {
+        this.buzzButton.disabled = true;
+        this.penaltyMessage.style.opacity = "1";
+        setTimeout(() => {
+            this.buzzButton.disabled = false;
+            this.penaltyMessage.style.opacity = "0";
         }, 3000);
-    } else if (message == "FINAL") {
-        buzzButton.style.display = "none";
-        finalAnswerInput.style.display = "block";
-        finalAnswerButton.style.display = "block";
+    }
+    
+    startFinalJeopardy() {
+        this.buzzButton.style.display = "none";
+        this.finalAnswerInput.style.display = "block";
+        this.finalAnswerButton.style.display = "block";
         document.body.classList.add("finalJeopardy");
-    } else if (message.queue) {
-        let listHtml = message.queue.map(username => "<li>" + username + "</li>").join("");
-        queueDiv.innerHTML = "<ul>" + listHtml + "</ul>";
-        if (message.queue.length > 0 && message.queue[0] === local_username) {
+    }
+    
+    updateQueue(message) {
+        const listHtml = message.queue.map(username => "<li>" + username + "</li>").join("");
+        this.queueDiv.innerHTML = "<ul>" + listHtml + "</ul>";
+        
+        if (message.queue.length > 0 && message.queue[0] === this.local_username) {
             document.body.classList.add("glowing");
         } else {
             document.body.classList.remove("glowing");
         }
-        if (message.win_player === local_username) {
-                document.body.classList.add("winning");
-                confetti();
-                setTimeout(function() {
-                    document.body.classList.remove("winning");
-                }, 3000);
+        
+        if (message.win_player === this.local_username) {
+            document.body.classList.add("winning");
+            confetti();
+            setTimeout(() => {
+                document.body.classList.remove("winning");
+            }, 3000);
         }
     }
-};
+    
+    buzz() {
+        this.buzzButton.classList.add('active');
+        const success = this.sendMessage("BUZZ");
+        
+        if (!success) {
+            this.showErrorMessage("Failed to send buzz - not connected!");
+        }
+        
+        setTimeout(() => {
+            this.buzzButton.classList.remove('active');
+        }, 500);
+    }
+    
+    sendFinalAnswer() {
+        if (!this.finalAnswerSent) {
+            const answer = this.finalAnswerInput.value.trim();
+            if (!answer) {
+                alert("Please enter an answer!");
+                return;
+            }
+            
+            const success = this.sendMessage("FINAL_ANSWER:" + this.local_username + ":" + answer);
+            if (success) {
+                this.finalAnswerInput.style.display = "none";
+                this.finalAnswerButton.style.display = "none";
+                this.sentMessage.style.display = "block";
+                this.finalAnswerSent = true;
+            } else {
+                this.showErrorMessage("Failed to send answer - not connected!");
+            }
+        }
+    }
+}
 
-socket.onerror = function(error) {
-  alert(`WebSocket error: ${error}`);
-};
+// Initialize the client
+const jeopardyClient = new JeopardyClient();
 
+// Global functions for button onclick events
 function buzz() {
-    buzzButton.classList.add('active');
-    socket.send("BUZZ");
-    setTimeout(function() {
-        buzzButton.classList.remove('active');
-    }, 500); // Adjust this delay as needed
+    jeopardyClient.buzz();
 }
 
 function sendFinalAnswer() {
-    if (!finalAnswerSent) {
-        let answer = finalAnswerInput.value;
-        socket.send("FINAL_ANSWER:" + answer);
-        finalAnswerInput.style.display = "none";
-        finalAnswerButton.style.display = "none";
-        sentMessage.style.display = "block";
-        finalAnswerSent = true;
-    }
+    jeopardyClient.sendFinalAnswer();
 }
 </script>
 
