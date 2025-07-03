@@ -353,6 +353,8 @@ class JeopardyClient {
         this.reconnectDelay = 1000; // Start with 1 second
         this.heartbeatInterval = null;
         this.connectionState = 'disconnected';
+        this.audioContext = null;
+        this.initAudio();
         
         // Connected players list and fun messages
         this.connected_players = [];
@@ -391,6 +393,76 @@ class JeopardyClient {
     init() {
         this.getConnectionInfo();
         this.connect();
+    }
+    
+    initAudio() {
+        try {
+            // Create audio context on first user interaction to comply with browser policies
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                document.addEventListener('click', () => {
+                    if (!this.audioContext) {
+                        this.audioContext = new AudioContext();
+                    }
+                }, { once: true });
+            }
+        } catch (e) {
+            console.log("Web Audio API not supported");
+        }
+    }
+    
+    playBuzzerSound() {
+        if (!this.audioContext) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.audioContext = new AudioContext();
+            } catch (e) {
+                return; // No audio support
+            }
+        }
+        
+        try {
+            // Create a modern, pleasant buzzer sound
+            const duration = 0.15;
+            const currentTime = this.audioContext.currentTime;
+            
+            // Create oscillator for the main tone
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            // Use a pleasant frequency (E5 note)
+            oscillator.frequency.setValueAtTime(659.25, currentTime);
+            
+            // Create envelope for smooth sound
+            gainNode.gain.setValueAtTime(0, currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+            
+            // Connect nodes
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            // Play sound
+            oscillator.start(currentTime);
+            oscillator.stop(currentTime + duration);
+            
+            // Add a subtle second tone for richness
+            const oscillator2 = this.audioContext.createOscillator();
+            const gainNode2 = this.audioContext.createGain();
+            
+            oscillator2.frequency.setValueAtTime(880, currentTime); // A5
+            gainNode2.gain.setValueAtTime(0, currentTime);
+            gainNode2.gain.linearRampToValueAtTime(0.15, currentTime + 0.01);
+            gainNode2.gain.exponentialRampToValueAtTime(0.01, currentTime + duration);
+            
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(this.audioContext.destination);
+            
+            oscillator2.start(currentTime);
+            oscillator2.stop(currentTime + duration);
+        } catch (e) {
+            console.log("Error playing sound:", e);
+        }
     }
     
     getConnectionInfo() {
@@ -636,6 +708,12 @@ class JeopardyClient {
     }
     
     updateQueue(message) {
+        // Check if someone new buzzed in (queue got longer)
+        if (this.previousQueueLength !== undefined && message.queue.length > this.previousQueueLength) {
+            this.playBuzzerSound();
+        }
+        this.previousQueueLength = message.queue.length;
+        
         const listHtml = message.queue.map(username => "<li>" + username + "</li>").join("");
         this.queueDiv.innerHTML = "<ul>" + listHtml + "</ul>";
         
