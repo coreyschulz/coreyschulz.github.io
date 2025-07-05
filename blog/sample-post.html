@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>The Art of Building Resilient Software Systems - Corey Schulz</title>
+    
+    <link rel="icon" href="../favicon.ico" type="image/png" />
+    
+    <link href="https://fonts.googleapis.com/css?family=Reem+Kufi|Roboto:300" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/themes/indigo-white.css">
+    <link rel="stylesheet" href="../css/blog.css">
+</head>
+<body>
+    <nav class="blog-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="home-link">
+                <i class="fas fa-arrow-left"></i> Home
+            </a>
+            <a href="../blog" class="blog-index-link">Blog</a>
+        </div>
+    </nav>
+    
+    <article class="blog-post">
+        <header class="blog-header">
+            <h1 class="blog-title">The Art of Building Resilient Software Systems</h1>
+            <div class="blog-meta">
+                <time datetime="2025-07-05T00:00:00">July 05, 2025</time>
+                <span class="reading-time">2 min read</span>
+            </div>
+        </header>
+        
+        <div class="blog-content">
+            <p>In today's interconnected world, building software that can withstand failures, scale gracefully, and recover quickly has become more critical than ever. This post explores key principles and practices for creating resilient software systems.</p>
+<h2>Understanding Resilience</h2>
+<p>Software resilience is the ability of a system to <strong>adapt and recover</strong> from failures, maintaining acceptable performance levels even when things go wrong. It's not about preventing failures entirely—that's impossible—but about designing systems that can handle failures gracefully.</p>
+<h3>Key Principles</h3>
+<ol>
+<li><strong>Fail Fast, Recover Quickly</strong></li>
+</ol>
+<p>- Systems should detect failures early - Recovery mechanisms should be automated - Clear error messages help diagnose issues</p>
+<ol>
+<li><strong>Redundancy and Replication</strong></li>
+</ol>
+<p>- Critical components should have backups - Data should be replicated across multiple locations - Load balancing distributes traffic effectively</p>
+<ol>
+<li><strong>Isolation and Containment</strong></li>
+</ol>
+<p>- Failures should be contained to minimize impact - Use circuit breakers to prevent cascade failures - Implement proper error boundaries</p>
+<h2>Practical Implementation Strategies</h2>
+<h3>Circuit Breakers</h3>
+<p>One of the most effective patterns for building resilient systems is the circuit breaker pattern. Here's a simple example:</p>
+<p>``<code>python class CircuitBreaker: def <strong>init</strong>(self, failure<em>threshold=5, recovery</em>timeout=60): self.failure<em>threshold = failure</em>threshold self.recovery<em>timeout = recovery</em>timeout self.failure_count = 0 self.last<em>failure</em>time = None self.state = 'CLOSED'</p>
+</code>``
+<h3>Health Checks and Monitoring</h3>
+<p>Regular health checks are essential for maintaining system resilience:</p>
+<ul>
+<li><strong>Endpoint monitoring</strong>: Check if services are responding</li>
+<li><strong>Resource monitoring</strong>: Track CPU, memory, and disk usage</li>
+<li><strong>Business metric monitoring</strong>: Ensure key features are working</li>
+</ul>
+<blockquote>"The best way to build a resilient system is to assume everything will fail and design accordingly." - Anonymous DevOps Engineer</blockquote>
+<h2>Testing for Resilience</h2>
+<p>You can't claim your system is resilient unless you've tested it under failure conditions. Consider these approaches:</p>
+<ul>
+<li><strong>Chaos Engineering</strong>: Intentionally introduce failures to test recovery</li>
+<li><strong>Load Testing</strong>: Ensure your system can handle expected traffic</li>
+<li><strong>Disaster Recovery Drills</strong>: Practice your recovery procedures</li>
+</ul>
+<h3>Common Testing Scenarios</h3>
+<p>| Scenario | Purpose | Frequency | |----------|---------|-----------| | Network Latency | Test timeout handling | Weekly | | Service Outage | Verify failover mechanisms | Monthly | | Data Corruption | Check backup/recovery | Quarterly |</p>
+<h2>Real-World Examples</h2>
+<p>Let's look at how major tech companies implement resilience:</p>
+<ol>
+<li><strong>Netflix</strong> pioneered Chaos Monkey to randomly terminate instances</li>
+<li><strong>Amazon</strong> uses cell-based architecture to isolate failures</li>
+<li><strong>Google</strong> employs extensive redundancy and automatic failover</li>
+</ol>
+<hr>
+<h2>Conclusion</h2>
+<p>Building resilient software systems requires a combination of good architecture, proper testing, and continuous improvement. Remember these key takeaways:</p>
+<ul>
+<li>Design for failure from the beginning</li>
+<li>Test your assumptions regularly</li>
+<li>Monitor everything that matters</li>
+<li>Learn from every incident</li>
+</ul>
+<p>By following these principles and practices, you can build systems that not only survive failures but thrive despite them. The investment in resilience pays dividends in reduced downtime, better user experience, and more peaceful on-call rotations.</p>
+<em>What resilience patterns have you found most effective in your projects? Share your experiences in the comments below!</em>
+        </div>
+        
+        <footer class="blog-footer">
+            <div class="share-section">
+                <span class="share-label">Share this post:</span>
+                <a href="https://twitter.com/intent/tweet?text=The%20Art%20of%20Building%20Resilient%20Software%20Systems&url=https%3A//coreyschulz.com/blog/sample-post.html" target="_blank" rel="noopener" class="share-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A//coreyschulz.com/blog/sample-post.html" target="_blank" rel="noopener" class="share-link">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </footer>
+    </article>
+    
+    <div class="blog-navigation">
+        <div class="nav-container">
+            <!--
+            <a href="" class="nav-prev">
+                <i class="fas fa-chevron-left"></i>
+                <span></span>
+            </a>
+            -->
+            
+            <!--
+            <a href="" class="nav-next">
+                <span></span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            -->
+        </div>
+    </div>
+</body>
+</html>

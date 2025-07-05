@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{{title}} - Corey Schulz</title>
+    
+    <link rel="icon" href="../favicon.ico" type="image/png" />
+    
+    <link href="https://fonts.googleapis.com/css?family=Reem+Kufi|Roboto:300" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/themes/indigo-white.css">
+    <link rel="stylesheet" href="../css/blog.css">
+</head>
+<body>
+    <nav class="blog-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="home-link">
+                <i class="fas fa-arrow-left"></i> Home
+            </a>
+            <a href="../blog" class="blog-index-link">Blog</a>
+        </div>
+    </nav>
+    
+    <article class="blog-post">
+        <header class="blog-header">
+            <h1 class="blog-title">{{title}}</h1>
+            <div class="blog-meta">
+                <time datetime="{{date_iso}}">{{date_formatted}}</time>
+                <span class="reading-time">{{reading_time}} min read</span>
+            </div>
+        </header>
+        
+        <div class="blog-content">
+            {{content}}
+        </div>
+        
+        <footer class="blog-footer">
+            <div class="share-section">
+                <span class="share-label">Share this post:</span>
+                <a href="https://twitter.com/intent/tweet?text={{title_encoded}}&url={{url_encoded}}" target="_blank" rel="noopener" class="share-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{url_encoded}}" target="_blank" rel="noopener" class="share-link">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </footer>
+    </article>
+    
+    <div class="blog-navigation">
+        <div class="nav-container">
+            {{#if prev_post}}
+            <a href="{{prev_post.filename}}" class="nav-prev">
+                <i class="fas fa-chevron-left"></i>
+                <span>{{prev_post.title}}</span>
+            </a>
+            {{/if}}
+            
+            {{#if next_post}}
+            <a href="{{next_post.filename}}" class="nav-next">
+                <span>{{next_post.title}}</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {{/if}}
+        </div>
+    </div>
+</body>
+</html>
