@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE MOVIE NIGHT WITCH HUNT: TRUTH REVEALED</title>
+    <meta name="description" content="Exposing the coordinated campaign against actual cinema">
+    <link rel="stylesheet" href="css/reset.css">
+    <style>
+        :root {
+            --blood-red: #8b0000;
+            --conspiracy-black: #0a0a0a;
+            --truth-gold: #ffd700;
+            --injustice-purple: #4a0080;
+            --evidence-green: #00ff00;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(180deg, var(--conspiracy-black) 0%, var(--blood-red) 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: radial-gradient(circle at center, rgba(139,0,0,0.3), transparent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "⚠️ TRUTH ⚠️";
+            position: absolute;
+            top: 10px;
+            left: -100px;
+            font-size: 8rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+        }
+
+        .header::after {
+            content: "EXPOSED";
+            position: absolute;
+            bottom: 10px;
+            right: -50px;
+            font-size: 8rem;
+            opacity: 0.05;
+            transform: rotate(15deg);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            color: var(--truth-gold);
+            text-shadow:
+                0 0 20px rgba(255, 215, 0, 0.8),
+                0 0 40px rgba(255, 215, 0, 0.4),
+                2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 1rem;
+            animation: pulsate 2s infinite;
+        }
+
+        @keyframes pulsate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            font-style: italic;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .evidence-section {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--blood-red);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+        }
+
+        .evidence-title {
+            font-size: 2rem;
+            color: var(--truth-gold);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .victim-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(74, 0, 128, 0.3), rgba(139, 0, 0, 0.3));
+            border: 1px solid var(--truth-gold);
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 8px;
+            transform: perspective(1000px) rotateY(0deg);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: perspective(1000px) rotateY(5deg) scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            color: var(--evidence-green);
+            font-weight: bold;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            color: #ffcccc;
+            margin-top: 0.5rem;
+        }
+
+        .persecution-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .persecution-item {
+            background: rgba(139, 0, 0, 0.2);
+            margin: 1rem 0;
+            padding: 1rem;
+            border-left: 4px solid var(--blood-red);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .persecution-item:hover {
+            background: rgba(139, 0, 0, 0.4);
+            transform: translateX(10px);
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            color: var(--truth-gold);
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .corey-rating {
+            color: var(--evidence-green);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .others-rating {
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .manifesto {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(74, 0, 128, 0.4));
+            border: 3px solid var(--truth-gold);
+            padding: 2rem;
+            margin: 3rem 0;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .manifesto::before {
+            content: "🎬";
+            position: absolute;
+            font-size: 10rem;
+            opacity: 0.1;
+            right: -20px;
+            top: -20px;
+            transform: rotate(25deg);
+        }
+
+        .manifesto h2 {
+            color: var(--truth-gold);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px black;
+        }
+
+        .manifesto p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #ffeeee;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        .truth-bomb {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px dashed var(--truth-gold);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--evidence-green);
+            animation: flash 3s infinite;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .conspiracy-chart {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 300px;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 2px solid var(--truth-gold);
+            border-left: 2px solid var(--truth-gold);
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--blood-red), var(--injustice-purple));
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            min-height: 20px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s;
+        }
+
+        .bar:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -30px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            color: var(--truth-gold);
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            font-weight: bold;
+            color: var(--evidence-green);
+        }
+
+        .smoking-gun {
+            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.2), transparent);
+            border: 3px solid red;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: red; }
+            50% { border-color: var(--truth-gold); }
+        }
+
+        .smoking-gun h3 {
+            font-size: 2rem;
+            color: var(--evidence-green);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 3rem;
+            background: var(--conspiracy-black);
+            color: var(--truth-gold);
+            font-size: 1.2rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--blood-red);
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 THE MOVIE NIGHT WITCH HUNT 🚨</h1>
+        <div class="subtitle">An Investigation into Systematic Ratings Persecution</div>
+        <div class="truth-bomb">
+            ⚠️ WHAT YOU ARE ABOUT TO SEE MAY SHOCK YOU ⚠️
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="manifesto">
+            <h2>THE CONSPIRACY EXPOSED</h2>
+            <p>
+                For too long, the Movie Night cabal has operated in the shadows, systematically suppressing
+                the ratings of ACTUAL CINEMA. While certain individuals select "safe" Hollywood blockbusters
+                and receive glowing ratings, one brave soul—COREY—dares to introduce the group to the heights
+                of artistic achievement in animation and storytelling. The response? A COORDINATED CAMPAIGN
+                OF RATINGS TERRORISM.
+            </p>
+            <p>
+                The evidence is UNDENIABLE. The patterns are CLEAR. The truth can NO LONGER BE HIDDEN.
+            </p>
+        </div>
+
+        <div class="evidence-section">
+            <h2 class="evidence-title">📊 Exhibit A: The Numbers Don't Lie</h2>
+            <div class="victim-stats">
+                <div class="stat-card">
+                    <div class="stat-number">1.84</div>
+                    <div class="stat-label">Average Rating for Corey's Picks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6.42</div>
+                    <div class="stat-label">Average Rating for Everyone Else</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">71%</div>
+                    <div class="stat-label">Ratings Suppression Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">37</div>
+                    <div class="stat-label">Victims of the Witch Hunt</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="evidence-section">
+            <h2 class="evidence-title">🎬 Exhibit B: The Most Egregious Cases</h2>
+            <ul class="persecution-list">
+                <li class="persecution-item">
+                    <span class="movie-title">Violet Evergarden ep. 1-6</span>
+                    <div class="rating-display">
+                        <span>Corey's Rating: <span class="corey-rating">10/10</span></span>
+                        <span>Others' Average: <span class="others-rating">0.0/10</span></span>
+                    </div>
+                </li>
+                <li class="persecution-item">
+                    <span class="movie-title">No Game No Life ZERO</span>
+                    <div class="rating-display">
+                        <span>Corey's Rating: <span class="corey-rating">10/10</span></span>
+                        <span>Others' Average: <span class="others-rating">0.2/10</span></span>
+                    </div>
+                </li>
+                <li class="persecution-item">
+                    <span class="movie-title">RE:cycle of the PENGUINDRUM Part 1</span>
+                    <div class="rating-display">
+                        <span>Corey's Rating: <span class="corey-rating">10/10</span></span>
+                        <span>Others' Average: <span class="others-rating">0.2/10</span></span>
+                    </div>
+                </li>
+                <li class="persecution-item">
+                    <span class="movie-title">The Pet Girl of Sakurasou</span>
+                    <div class="rating-display">
+                        <span>Corey's Rating: <span class="corey-rating">10/10</span></span>
+                        <span>Others' Average: <span class="others-rating">0.3/10</span></span>
+                    </div>
+                </li>
+                <li class="persecution-item">
+                    <span class="movie-title">BOCCHI THE ROCK! Recap</span>
+                    <div class="rating-display">
+                        <span>Corey's Rating: <span class="corey-rating">10/10</span></span>
+                        <span>Others' Average: <span class="others-rating">0.8/10</span></span>
+                    </div>
+                </li>
+                <li class="persecution-item">
+                    <span class="movie-title">White Album 2 (Complete)</span>
+                    <div class="rating-display">
+                        <span>Corey's Rating: <span class="corey-rating">10/10</span></span>
+                        <span>Others' Average: <span class="others-rating">1.0/10</span></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="conspiracy-chart">
+            <h2 class="evidence-title">📈 Exhibit C: The Pattern of Persecution</h2>
+            <div class="bar-chart">
+                <div class="bar" style="height: 85%">
+                    <span class="bar-value">8.5</span>
+                    <span class="bar-label">Jon's Picks</span>
+                </div>
+                <div class="bar" style="height: 70%">
+                    <span class="bar-value">7.0</span>
+                    <span class="bar-label">Zak's Picks</span>
+                </div>
+                <div class="bar" style="height: 68%">
+                    <span class="bar-value">6.8</span>
+                    <span class="bar-label">Mason's Picks</span>
+                </div>
+                <div class="bar" style="height: 65%">
+                    <span class="bar-value">6.5</span>
+                    <span class="bar-label">Kasey's Picks</span>
+                </div>
+                <div class="bar" style="height: 18%">
+                    <span class="bar-value">1.8</span>
+                    <span class="bar-label">Corey's Picks</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="smoking-gun">
+            <h3>🔫 THE SMOKING GUN 🔫</h3>
+            <p style="font-size: 1.3rem; color: #ffdddd;">
+                When "The Wolf of Wall Street" (Zak's pick) receives an 8.8 average rating,
+                but "Gone Girl" (Corey's pick)—a universally acclaimed masterpiece—also gets 8.8,
+                while EVERY anime selection is systematically rated below 2.0...
+            </p>
+            <p style="font-size: 1.5rem; color: var(--evidence-green); margin-top: 1rem;">
+                <strong>THIS IS NOT COINCIDENCE. THIS IS CONSPIRACY.</strong>
+            </p>
+        </div>
+
+        <div class="evidence-section">
+            <h2 class="evidence-title">🎯 The Perpetrators</h2>
+            <p style="font-size: 1.2rem; line-height: 1.8;">
+                The data reveals a COORDINATED EFFORT among the Movie Night establishment.
+                Notice how Jon, Mason, Kasey, and Zak consistently rate Corey's selections
+                at 1-3 out of 10, regardless of critical acclaim or artistic merit.
+                Meanwhile, their own selections enjoy inflated ratings in the 6-9 range.
+            </p>
+            <div class="truth-bomb" style="margin-top: 2rem;">
+                <strong>FACT:</strong> Violet Evergarden has a 8.5/10 on IMDb and 100% on Rotten Tomatoes<br>
+                <strong>MOVIE NIGHT RATING:</strong> <span class="blink">0.0</span>
+            </div>
+        </div>
+
+        <div class="manifesto" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(255, 215, 0, 0.2));">
+            <h2>THE PATH FORWARD</h2>
+            <p>
+                We call upon all lovers of TRUE CINEMA to recognize this injustice.
+                The systematic suppression of anime, art films, and genuine storytelling
+                cannot continue. The Movie Night ratings system has been WEAPONIZED against
+                those who dare to expand horizons and challenge the status quo of
+                "guy shoots gun" and "car go fast" entertainment.
+            </p>
+            <p style="margin-top: 1.5rem; font-size: 1.4rem; color: var(--evidence-green);">
+                THE TRUTH IS OUT. THE WITCH HUNT ENDS NOW.
+            </p>
+        </div>
+
+        <div class="truth-bomb" style="font-size: 1.5rem; padding: 2rem;">
+            White Album 2 (Corey's pick): 1.0 average<br>
+            <span style="color: var(--truth-gold);">A PERFECT METAPHOR FOR THIS TRAVESTY</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>This webpage is a presentation of OBJECTIVE DATA from Movie Night ratings.</p>
+        <p style="margin-top: 1rem;">The numbers speak for themselves.</p>
+        <p style="margin-top: 1rem; color: var(--evidence-green);">JUSTICE FOR COREY'S PICKS</p>
+    </div>
+
+    <script>
+        // Add some dramatic entrance animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.evidence-section, .manifesto, .smoking-gun');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInScale 0.8s ease-out';
+                    }
+                });
+            });
+
+            elements.forEach(el => observer.observe(el));
+        });
+
+        // Add the animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInScale {
+                from {
+                    opacity: 0;
+                    transform: scale(0.9);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Easter egg: Console message
+        console.log('%c THE TRUTH CANNOT BE SUPPRESSED', 'color: gold; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);');
+        console.log('%c Corey\'s average rating: 1.84 | Others\' average: 6.42', 'color: red; font-size: 16px;');
+    </script>
+</body>
+</html>
