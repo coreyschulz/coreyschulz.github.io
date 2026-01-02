@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Best of 2025 - Corey Schulz</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Reset -->
+  <link rel="stylesheet" href="../css/reset.css">
+
+  <style>
+    /* ============================================
+       CSS Custom Properties
+       ============================================ */
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a24;
+      --bg-card-hover: #22222e;
+
+      --text-primary: #f5f5f7;
+      --text-secondary: #a1a1aa;
+      --text-muted: #52525b;
+
+      --accent-start: #8b5cf6;
+      --accent-end: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ============================================
+       Base Styles
+       ============================================ */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ============================================
+       Page Hero
+       ============================================ */
+    .page-hero {
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+      animation: pulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.5; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-year {
+      font-family: 'Reem Kufi', sans-serif;
+      font-size: clamp(6rem, 20vw, 14rem);
+      font-weight: 700;
+      line-height: 1;
+      background: var(--accent-gradient);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 6s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .hero-title {
+      font-family: 'Reem Kufi', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: -1rem;
+    }
+
+    .hero-intro {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      margin-top: 2rem;
+      max-width: 600px;
+    }
+
+    /* ============================================
+       Main Content
+       ============================================ */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* ============================================
+       Category Sections
+       ============================================ */
+    .category {
+      margin-bottom: 5rem;
+    }
+
+    .category-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: var(--glass-bg);
+      border-radius: 1rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+    }
+
+    .category-label {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .category-title {
+      font-family: 'Reem Kufi', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ============================================
+       Hero Pick (#1)
+       ============================================ */
+    .hero-pick {
+      background: var(--bg-card);
+      border-radius: 1.5rem;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hero-pick:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-pick-image {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .hero-pick-image img {
+      width: 100%;
+      height: auto;
+      max-height: 500px;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .hero-pick:hover .hero-pick-image img {
+      transform: scale(1.02);
+    }
+
+    .hero-pick-content {
+      padding: 2rem;
+    }
+
+    .rank-badge {
+      font-family: 'Reem Kufi', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      display: inline-block;
+      margin-bottom: 1rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+    }
+
+    .rank-badge.rank-1 {
+      background: var(--accent-gradient);
+      border: none;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+    }
+
+    .pick-title {
+      font-family: 'Reem Kufi', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.5rem 0;
+      line-height: 1.2;
+    }
+
+    .pick-date {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .pick-blurb {
+      font-size: 1.45rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* ============================================
+       Item Cards (#2-5)
+       ============================================ */
+    .item-card {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      background: var(--bg-card);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .item-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .item-card:nth-child(odd) {
+      flex-direction: row;
+    }
+
+    .item-card:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .item-image {
+      flex: 0 0 45%;
+      max-width: 45%;
+      overflow: hidden;
+    }
+
+    .item-image img {
+      width: 100%;
+      height: auto;
+      min-height: 200px;
+      max-height: 350px;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .item-card:hover .item-image img {
+      transform: scale(1.03);
+    }
+
+    /* Special handling for portrait images */
+    .item-image.portrait {
+      flex: 0 0 35%;
+      max-width: 35%;
+    }
+
+    .item-image.portrait img {
+      max-height: 400px;
+      object-fit: contain;
+      background: var(--bg-secondary);
+    }
+
+    .item-content {
+      flex: 1;
+      padding: 1.5rem 2rem;
+    }
+
+    .item-title {
+      font-family: 'Reem Kufi', sans-serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem 0;
+      line-height: 1.3;
+    }
+
+    .item-date {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .item-blurb {
+      font-size: 1.35rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ============================================
+       Footer
+       ============================================ */
+    .page-footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .page-footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .page-footer a:hover {
+      color: var(--text-primary);
+    }
+
+    /* ============================================
+       Responsive Design
+       ============================================ */
+
+    /* Tablet */
+    @media (max-width: 1024px) {
+      .item-image {
+        flex: 0 0 40%;
+        max-width: 40%;
+      }
+
+      .item-image.portrait {
+        flex: 0 0 30%;
+        max-width: 30%;
+      }
+
+      .item-content {
+        padding: 1.25rem 1.5rem;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .page-hero {
+        min-height: 40vh;
+        padding: 3rem 1.5rem;
+      }
+
+      .hero-title {
+        letter-spacing: 0.15em;
+      }
+
+      main {
+        padding: 0 1rem 3rem;
+      }
+
+      .category {
+        margin-bottom: 4rem;
+      }
+
+      .category-header {
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .hero-pick {
+        border-radius: 1rem;
+      }
+
+      .hero-pick-content {
+        padding: 1.5rem;
+      }
+
+      .hero-pick-image img {
+        max-height: 300px;
+      }
+
+      .item-card {
+        flex-direction: column !important;
+        border-radius: 1rem;
+      }
+
+      .item-image,
+      .item-image.portrait {
+        flex: none;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .item-image img,
+      .item-image.portrait img {
+        max-height: 280px;
+        width: 100%;
+        object-fit: cover;
+      }
+
+      .item-content {
+        padding: 1.25rem;
+      }
+
+      .pick-blurb,
+      .item-blurb {
+        font-size: 1.15rem;
+      }
+    }
+
+    /* Small Mobile */
+    @media (max-width: 480px) {
+      .hero-pick-image img {
+        max-height: 220px;
+      }
+
+      .item-image img {
+        max-height: 200px;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .page-hero::before {
+        animation: none;
+      }
+      .hero-year {
+        animation: none;
+      }
+      .hero-pick,
+      .item-card {
+        transition: none;
+      }
+      .hero-pick-image img,
+      .item-image img {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Page Hero -->
+  <header class="page-hero">
+    <div class="hero-content">
+      <div class="hero-year">2025</div>
+      <h1 class="hero-title">Best Of</h1>
+      <p class="hero-intro">My favorite games, movies, and TV shows of the year.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============================================
+         GAMES
+         ============================================ -->
+    <section class="category">
+      <header class="category-header">
+        <span class="category-label">Top 5</span>
+        <h2 class="category-title">Games</h2>
+      </header>
+
+      <!-- #1 Hero Pick -->
+      <article class="hero-pick">
+        <div class="hero-pick-image">
+          <img src="images/2025/games_1.png" alt="Clair Obscur: Expedition 33">
+        </div>
+        <div class="hero-pick-content">
+          <span class="rank-badge rank-1">01</span>
+          <h3 class="pick-title">Clair Obscur: Expedition 33</h3>
+          <p class="pick-date">April 24, 2025</p>
+          <p class="pick-blurb">Drawing clear inspiration from its predecessors like <em>FINAL FANTASY X</em> and <em>Xenoblade Chronicles 3</em>, <em>Clair Obscur</em> manages to stand among them and deliver a powerful story.</p>
+        </div>
+      </article>
+
+      <!-- #2-5 Item Cards -->
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/games_2.png" alt="Trails in the Sky 1st Chapter">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">02</span>
+          <h3 class="item-title">Trails in the Sky 1st Chapter</h3>
+          <p class="item-date">September 19, 2025</p>
+          <p class="item-blurb">Perfect in execution, pacing and scope, this is an RPG that crafts the bedrock for all future games in the <em>Trails</em> series!</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/games_3.png" alt="Split Fiction">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">03</span>
+          <h3 class="item-title">Split Fiction</h3>
+          <p class="item-date">March 6, 2025</p>
+          <p class="item-blurb">YMMV but probably the best couch co-op game ever made. The antagonist was way funnier than he had any right to be.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/games_4.png" alt="Donkey Kong Bananza">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">04</span>
+          <h3 class="item-title">Donkey Kong Bananza</h3>
+          <p class="item-date">July 17, 2025</p>
+          <p class="item-blurb">The first Donkey Kong game I've liked! An exceptional 3D platformer.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/games_5.png" alt="Death Stranding 2: On the Beach">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">05</span>
+          <h3 class="item-title">Death Stranding 2: On the Beach</h3>
+          <p class="item-date">June 26, 2025</p>
+          <p class="item-blurb">More Walking, but this time with even more luxurious, cinematic cutscenes.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============================================
+         MOVIES
+         ============================================ -->
+    <section class="category">
+      <header class="category-header">
+        <span class="category-label">Top 5</span>
+        <h2 class="category-title">Movies</h2>
+      </header>
+
+      <!-- #1 Hero Pick -->
+      <article class="hero-pick">
+        <div class="hero-pick-image">
+          <img src="images/2025/movies_1.png" alt="Chainsaw Man - The Movie: Reze Arc">
+        </div>
+        <div class="hero-pick-content">
+          <span class="rank-badge rank-1">01</span>
+          <h3 class="pick-title">Chainsaw Man - The Movie: Reze Arc</h3>
+          <p class="pick-date">October 29, 2025</p>
+          <p class="pick-blurb">So good I saw this twice in theaters! See also: <a href="https://www.merriam-webster.com/dictionary/peak" style="color: var(--accent-start);">peak</a>.</p>
+        </div>
+      </article>
+
+      <!-- #2-5 Item Cards -->
+      <article class="item-card">
+        <div class="item-image portrait">
+          <img src="images/2025/movies_2.png" alt="Kaguya-sama: Love Is War -Stairway to Adulthood-">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">02</span>
+          <h3 class="item-title">Kaguya-sama: Love Is War -Stairway to Adulthood-</h3>
+          <p class="item-date">December 31, 2025</p>
+          <p class="item-blurb">Arguably not a movie? But it premiered in one hour-long contiguous chunk so it's going here. The fearful anxiety that stems from a first relationship - or perhaps any new one? - can be tough to communicate over video, but this did a great job.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/movies_3.png" alt="One Battle After Another">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">03</span>
+          <h3 class="item-title">One Battle After Another</h3>
+          <p class="item-date">September 26, 2025</p>
+          <p class="item-blurb">I don't usually like action thrillers, but this movie gave its characters ample time to shine and accentuated the fight scenes.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/movies_4.png" alt="Rental Family">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">04</span>
+          <h3 class="item-title">Rental Family</h3>
+          <p class="item-date">November 21, 2025</p>
+          <p class="item-blurb">Explores nuances of human connection across language and culture that aren't usually touched on in movies - tells a few interesting stories that intersect, and has great pacing.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/movies_5.png" alt="F1">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">05</span>
+          <h3 class="item-title">F1</h3>
+          <p class="item-date">June 27, 2025</p>
+          <p class="item-blurb">Silly racing movie that was more fun to watch than it should have been.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============================================
+         TV SHOWS
+         ============================================ -->
+    <section class="category">
+      <header class="category-header">
+        <span class="category-label">Top 5</span>
+        <h2 class="category-title">TV Shows</h2>
+      </header>
+
+      <!-- #1 Hero Pick -->
+      <article class="hero-pick">
+        <div class="hero-pick-image">
+          <img src="images/2025/tv_1.png" alt="Severance S2">
+        </div>
+        <div class="hero-pick-content">
+          <span class="rank-badge rank-1">01</span>
+          <h3 class="pick-title">Severance S2</h3>
+          <p class="pick-date">January 17, 2025 - March 21, 2025</p>
+          <p class="pick-blurb">A powerful payoff to Season 1, the writers for this continue to interweave new mysteries into the narrative like clockwork while setting up for the eventual end.</p>
+        </div>
+      </article>
+
+      <!-- #2-5 Item Cards -->
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/tv_2.png" alt="Pluribus">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">02</span>
+          <h3 class="item-title">Pluribus</h3>
+          <p class="item-date">November 7, 2025 - December 24, 2025</p>
+          <p class="item-blurb">On the first episode I was prepared to write it off as perhaps derivative of <em>Invasion of the Body Snatchers</em> - glad I was wrong! A great, suspenseful sci-fi mystery.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/tv_3.png" alt="Ave Mujica: The Die is Cast">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">03</span>
+          <h3 class="item-title">Ave Mujica: The Die is Cast</h3>
+          <p class="item-date">January 2, 2025 - March 27, 2025</p>
+          <p class="item-blurb">Melodrama + band + existentialism = <em>Ave Mujica</em> made me cry the most of any show this year.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/tv_4.png" alt="The Rehearsal S2">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">04</span>
+          <h3 class="item-title">The Rehearsal S2</h3>
+          <p class="item-date">April 20, 2025 - May 25, 2025</p>
+          <p class="item-blurb">Maybe a bit more on-rails than Season 1? Everything Nathan Fielder makes continues to be prestige television.</p>
+        </div>
+      </article>
+
+      <article class="item-card">
+        <div class="item-image">
+          <img src="images/2025/tv_5.png" alt="Re:Zero - Starting Life in Another World 3">
+        </div>
+        <div class="item-content">
+          <span class="rank-badge">05</span>
+          <h3 class="item-title">Re:Zero - Starting Life in Another World 3</h3>
+          <p class="item-date">October 2, 2024 - March 26, 2025</p>
+          <p class="item-blurb">If you liked episodes 1-50 of <em>Re:Zero</em>, you might just like episodes 51-66 of <em>Re:Zero</em>.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <p>&copy; 2025 Corey Schulz &middot; <a href="/">Home</a> &middot; <a href="2024.html">2024</a></p>
+  </footer>
+</body>
+</html>
